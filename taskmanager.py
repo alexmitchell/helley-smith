@@ -6,8 +6,7 @@ import pandas as pd
 import scipy.stats as scstats
 #import probability_plots as pbp
 
-import utilities as ut
-from utilities import printer
+import geoutilities as gut
 
 VERBOSE = True
 RELOAD_DATA = False
@@ -24,8 +23,8 @@ class TaskManager:
     hs_sample_times = (np.array([2890,2950,3010,3070]) - 2870) * 60 # Feeling too lazy to parse this from the HS data labels
 
     def __init__(self):
-        self.grapher = ut.Grapher()
-        self.loader = ut.DataLoader(Project.data_path)
+        self.grapher = gut.ut_graphing.Grapher()
+        self.loader = gut.DataLoader(Project.data_path)
 
         names = Project.pickle_names
         if RELOAD_DATA or not self.loader.is_pickled(names.values()):
@@ -41,7 +40,7 @@ class TaskManager:
 
 
     def load_peak_data(self):
-        loader = ut.DataLoader(data_path = Project.data_path)
+        loader = gut.DataLoader(data_path = Project.data_path)
         printer("Loading data...")
 
         self.load_helly_smith(loader)
@@ -154,7 +153,7 @@ class TaskManager:
 
         # Set up HS mather
         hs_distribution = self.hs_data.T.iloc[::-1] # flip order
-        self.hs_mather = ut.DistributionMather(hs_distribution, Project.hs_max_size)
+        self.hs_mather = gut.PDDistributions(hs_distribution, Project.hs_max_size)
 
         #  Average the 5 HS data for each time step
         self.hs_mather.calc_overall_sampler()
@@ -167,7 +166,7 @@ class TaskManager:
         # Compare HS to traveling window
         lt_windows = self.windowed_lt.T
         hs_time_sums = self.hs_mather.time_sums
-        compare = ut.DistributionMather.compare_distributions
+        compare = gut.DistributionMather.compare_distributions
         max_size = max(Project.hs_max_size, np.amax(Project.lt_size_classes))
         
         self.similarity = compare(lt_windows, hs_time_sums, 0, max_size)
