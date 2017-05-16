@@ -1,0 +1,3 @@
+[submodule "geoutilities"]
+	path = geoutilities
+	url = git@github.com:alexmitchell/geoutilities.git
